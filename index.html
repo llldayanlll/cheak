@@ -21,7 +21,12 @@
 
         saveButton.addEventListener('click', () => {
             const info = infoInput.value;
-            localStorage.setItem('savedInfo', info);
+            const savedInfo = localStorage.getItem('savedInfo');
+            if (savedInfo) {
+                localStorage.setItem('savedInfo', `${savedInfo}\n${info}`);
+            } else {
+                localStorage.setItem('savedInfo', info);
+            }
             infoInput.value = '';
         });
 
