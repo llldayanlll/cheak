@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Info Storage Page static browser</title>
+    <title>Info Storage Page</title>
     <style>
         /* Your CSS styling here */
     </style>
@@ -25,11 +25,16 @@
         function saveDataToIndexedDB(info) {
             const request = window.indexedDB.open('infoDatabase', 1);
 
+            request.onupgradeneeded = event => {
+                const db = event.target.result;
+                const store = db.createObjectStore('infoStore', { keyPath: 'id', autoIncrement: true });
+            };
+
             request.onsuccess = event => {
                 const db = event.target.result;
                 const transaction = db.transaction('infoStore', 'readwrite');
                 const store = transaction.objectStore('infoStore');
-                const saveRequest = store.put(info, 1);
+                const saveRequest = store.add({ text: info });
 
                 saveRequest.onsuccess = () => {
                     console.log('Data saved to IndexedDB');
