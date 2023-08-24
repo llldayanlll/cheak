@@ -18,14 +18,32 @@
 
         saveButton.addEventListener('click', () => {
             const info = infoInput.value;
-            const savedInfo = localStorage.getItem('savedInfo');
-            if (savedInfo) {
-                localStorage.setItem('savedInfo', `${info}\n${savedInfo}`);
-            } else {
-                localStorage.setItem('savedInfo', info);
-            }
+            saveDataToIndexedDB(info);
             infoInput.value = '';
         });
+
+        function saveDataToIndexedDB(info) {
+            const request = window.indexedDB.open('infoDatabase', 1);
+
+            request.onsuccess = event => {
+                const db = event.target.result;
+                const transaction = db.transaction('infoStore', 'readwrite');
+                const store = transaction.objectStore('infoStore');
+                const saveRequest = store.put(info, 1);
+
+                saveRequest.onsuccess = () => {
+                    console.log('Data saved to IndexedDB');
+                };
+
+                saveRequest.onerror = () => {
+                    console.error('Failed to save data to IndexedDB');
+                };
+            };
+
+            request.onerror = () => {
+                console.error('Failed to open IndexedDB');
+            };
+        }
     </script>
 </body>
 </html>
